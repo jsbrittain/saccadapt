@@ -3,7 +3,6 @@ import numpy as np
 
 
 class Eye:
-
     def __init__(self, filename=None):
         self.df = pd.DataFrame()
 
@@ -30,12 +29,17 @@ class Eye:
     ) -> pd.DataFrame:
         # extract sampling parameters
         self._DISPLAY_COORDS = list(
-            map(float, [x[:-1].split(" ") for x in data if "DISPLAY_COORDS" in x][0][-2:])
+            map(
+                float,
+                [x[:-1].split(" ") for x in data if "DISPLAY_COORDS" in x][0][-2:],
+            )
         )
         self._SAMPLE_RATE = float(
-            [x[:-1].split("\t") for x in data if "RATE" in x and x.startswith("SAMPLES")][
-                0
-            ][4]
+            [
+                x[:-1].split("\t")
+                for x in data
+                if "RATE" in x and x.startswith("SAMPLES")
+            ][0][4]
         )
         # extract trial parameters
         self._START = np.array(
@@ -46,15 +50,23 @@ class Eye:
         )
         assert len(self._START) == len(self._END)
         self._TRIALID = [int(x.strip().split(" ")[-1]) for x in data if "TRIALID" in x]
-        self._BLOCK = [int(x.strip().split(" ")[-1]) for x in data if "TRIAL_VAR block" in x]
+        self._BLOCK = [
+            int(x.strip().split(" ")[-1]) for x in data if "TRIAL_VAR block" in x
+        ]
         self._RECYCLED = [
             x.strip().split(" ")[-1] == "True"
             for x in data
             if "TRIAL_VAR Trial_Recycled_" in x
         ]
-        self._RECAL = [x.strip().split(" ")[-1] == "True" for x in data if "TRIAL_VAR Recal" in x]
-        self._TARGPOS = [int(x.strip().split(" ")[-1]) for x in data if "TRIAL_VAR targpos" in x]
-        self._STEPPOS = [int(x.strip().split(" ")[-1]) for x in data if "TRIAL_VAR steppos" in x]
+        self._RECAL = [
+            x.strip().split(" ")[-1] == "True" for x in data if "TRIAL_VAR Recal" in x
+        ]
+        self._TARGPOS = [
+            int(x.strip().split(" ")[-1]) for x in data if "TRIAL_VAR targpos" in x
+        ]
+        self._STEPPOS = [
+            int(x.strip().split(" ")[-1]) for x in data if "TRIAL_VAR steppos" in x
+        ]
         self._DUR = self._END - self._START
         # Target position shifts (can occur multiple times in a trial)
         self._TARGET_POS = [
@@ -71,9 +83,9 @@ class Eye:
         tsample = np.array(self._TARGET_POS_SAMPLE, "int")
         for start, end in zip(self._START, self._END):
             indices = np.array(
-                (np.greater_equal(tsample, start) & np.less_equal(tsample, end)).nonzero()[
-                    0
-                ],
+                (
+                    np.greater_equal(tsample, start) & np.less_equal(tsample, end)
+                ).nonzero()[0],
                 "int",
             )
             TARGETS.append(tuple(zip(tsample[indices], tpos[indices])))
