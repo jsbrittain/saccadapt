@@ -4,7 +4,7 @@ import numpy as np
 
 class Eye:
     def __init__(self, filename=None):
-        self.df = pd.DataFrame()
+        self.data = pd.DataFrame()
         self.trial = pd.DataFrame()
 
         if filename is not None:
@@ -20,7 +20,7 @@ class Eye:
         with open(filename, "r") as f:
             data = f.readlines()
         self.read_data(data, verbose=verbose)
-        return self.df
+        return self.data
 
     def read_data(
         self,
@@ -93,22 +93,43 @@ class Eye:
         # Fixation and saccade events (EFIX contains SFIX time; same with SACC)
         self._FIX = [
             (
-                x.strip().split("\t")[0].split(" ")[-1],
-                x.strip().split("\t")[1].split(" ")[0],
+                int(x.strip().split("\t")[0].split(" ")[-1]),
+                int(x.strip().split("\t")[1].split(" ")[0]),
             )
             for x in data
             if x.startswith("EFIX")
         ]
         self._SACC = [
             (
-                x.strip().split("\t")[0].split(" ")[-1],
-                x.strip().split("\t")[1].split(" ")[0],
+                int(x.strip().split("\t")[0].split(" ")[-1]),
+                int(x.strip().split("\t")[1].split(" ")[0]),
             )
             for x in data
             if x.startswith("ESACC")
         ]
+        tsample = np.array([x[0] for x in self._FIX], "int")
+        # Split fixations into trials
         self._TRIAL_FIX = []
+        for start, end in zip(self._START, self._END):
+            indices = np.array(
+                (
+                    np.greater_equal(tsample, start) & np.less_equal(tsample, end)
+                ).nonzero()[0],
+                "int",
+            )
+            self._TRIAL_FIX.append([self._FIX[ix] for ix in indices])
+        # Split saccades into trials
+        tsample = np.array([x[0] for x in self._SACC], "int")
         self._TRIAL_SACC = []
+        for start, end in zip(self._START, self._END):
+            indices = np.array(
+                (
+                    np.greater_equal(tsample, start) & np.less_equal(tsample, end)
+                ).nonzero()[0],
+                "int",
+            )
+            self._TRIAL_SACC.append([self._SACC[ix] for ix in indices])
+        # create trial dataframe
         self.trial = pd.DataFrame(
             data={
                 "TrialID": self._TRIALID,
@@ -121,11 +142,11 @@ class Eye:
                 "EndPos": self._END,
                 "Duration": self._DUR,
                 "Targets": TARGETS,
-                # "Fixations": TRIAL_FIX,
-                # "Saccades": TRIAL_SACC,
+                "Fixations": self._TRIAL_FIX,
+                "Saccades": self._TRIAL_SACC,
             }
         )
-        # isolate lines denoting eye position (those ending with ellipses)
+        # isolate lines denoting eye position in data (those ending with ellipses)
         data = [line[:-4] for line in data if line[-4:] == "...\n"]
         # convert list[str] to numpy matrix
         data = np.genfromtxt(
@@ -182,4 +203,4 @@ class Eye:
         self.trial = self.trial.reset_index(drop=True)
         if verbose:
             print("Trials after rejection: ", len(self.trial))
-        self.df = df
+        self.data = df
