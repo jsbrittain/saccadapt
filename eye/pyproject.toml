@@ -3,10 +3,10 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "eyeloader"
+name = "eye"
 version = "0.1.0"
 authors = [
     {name = "John Brittain", email="jsb1982@gmail.com"},
 ]
-description = "Utility package to load eyelink data in asc format"
+description = "Utility package to load, visualise and analyse eyelink data in asc format"
 requires-python = ">=3.8.0"
