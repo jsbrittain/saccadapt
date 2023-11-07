@@ -5,6 +5,7 @@ import numpy as np
 class Eye:
     def __init__(self, filename=None):
         self.df = pd.DataFrame()
+        self.trial = pd.DataFrame()
 
         if filename is not None:
             self.load_file(filename)
