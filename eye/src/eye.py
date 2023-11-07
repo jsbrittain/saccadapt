@@ -96,7 +96,7 @@ class Eye:
         ]
         self._TRIAL_FIX = []
         self._TRIAL_SACC = []
-        trial = pd.DataFrame(
+        self.trial = pd.DataFrame(
             data={
                 "TrialID": self._TRIALID,
                 "BlockNo": self._BLOCK,
@@ -164,9 +164,9 @@ class Eye:
 
         # Remove relcalibation trials
         if verbose:
-            print("Trials before rejection: ", len(trial))
-        trial = trial[trial["Recal"] == False]  # noqa: E712
-        trial = trial.reset_index(drop=True)
+            print("Trials before rejection: ", len(self.trial))
+        self.trial = self.trial[self.trial["Recal"] == False]  # noqa: E712
+        self.trial = self.trial.reset_index(drop=True)
         if verbose:
-            print("Trials after rejection: ", len(trial))
+            print("Trials after rejection: ", len(self.trial))
         self.df = df
