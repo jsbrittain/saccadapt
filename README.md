@@ -10,17 +10,6 @@ Jupyter notebook used for saccadic adaptation analysis. Simply click the above l
 
 These scripts explore the dataset graphically, and will develop a pipeline for a saccadic adaptation analysis.
 
-- [x] Load Eyelink data
-- [x] Exploratory data analysis
-  - [x] Identify channels, trial onsets and offsets, meta-data
-  - [x] Preprocessing
-  - [x] Plot channel data and trial-data
-- [ ] Analysis
-  - [ ] Idenitify trial types (adapt/non-adapt trials)
-  - [ ] Calculate saccadic latencies
-  - [ ] Support for multiple subjects/datasets
-  - [ ] Group statistics
-
 ## Open online
 
 The analysis script is provided as a Jupyter notebook which can be opened online using
