@@ -8,14 +8,19 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 Then, to run the Python code:
 ```bash
-uv sync
+uv venv
 . .venv/bin/activate
-python main.py
+uv pip install -r requirements.txt
+python main.py data/test.csv
 ```
 
-The code will attempt to open `data/test.csv` by default, but you can specify your own filename by running:
+You can specify your own filename by running:
 ```bash
 python main.py <filename>
+```
+or simply
+```bash
+./main.py <filename>
 ```
 
 The processed data will be given the same filename, but placed in a new directory `output/`.
